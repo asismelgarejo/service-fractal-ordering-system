@@ -3,8 +3,15 @@ import { Schema } from "mongoose";
 const OrderSchema = new Schema(
   {
     Date: String,
-    Order: String,
+    Order: {
+      type: String,
+      unique: true,
+    },
     FinalPrice: Number,
+    Status: {
+      type: String,
+      enum: ["Pending", "InProgress", "Completed"],
+    },
     Products: [
       {
         Product: {

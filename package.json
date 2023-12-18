@@ -8,7 +8,7 @@
     "build": "tsc ./src/main.ts",
     "dev": "run-p dev:*",
     "clean": "rimraf dist .esbuild .serverless",
-    "deploy:app": "cross-env NODE_ENV=production  serverless deploy --stage prod",
+    "deploy:app": "cross-env NODE_ENV=production sls deploy --stage prod",
     "dev:server": "cross-env NODE_ENV=development NODE_OPTIONS=--dns-result-order=ipv4first sls offline start --stage offline",
     "check-types": "tsc --noEmit --pretty",
     "commit": "cz",

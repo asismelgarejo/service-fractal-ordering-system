@@ -27,6 +27,10 @@ export default class OrderService {
   }
   async updateOrder(ID: string, payload: OrderDTO): Promise<void> {
     try {
+
+      const orderDoc = await this.findOrder(ID);
+      if(orderDoc.Status === "Completed") throw new Error("you can't modify a completed order")
+
       const response = await this.model.updateOne({ _id: ID }, payload);
       if (response.modifiedCount === 0) {
         throw new Error("the order does not exist. No document was updated");
