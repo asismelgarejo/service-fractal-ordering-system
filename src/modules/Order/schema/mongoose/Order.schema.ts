@@ -1,4 +1,8 @@
-import { Schema } from "mongoose";
+import mongoose, { Schema } from "mongoose";
+import {
+  OrderDocument,
+  OrderModelType,
+} from "../../interfaces/Order.interfaces";
 
 const OrderSchema = new Schema(
   {
@@ -41,4 +45,6 @@ const OrderSchema = new Schema(
 
 OrderSchema.set("toJSON", { virtuals: true });
 
-export default OrderSchema;
+export default function GetSchema(dbClient: typeof mongoose) {
+  return dbClient.model<OrderDocument, OrderModelType>("Order", OrderSchema);
+}

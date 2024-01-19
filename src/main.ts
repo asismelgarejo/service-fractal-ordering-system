@@ -5,7 +5,7 @@ const { urlencoded } = pkg;
 import * as dotenv from "dotenv";
 dotenv.config();
 
-import { InitializeDB } from "./database";
+import { InitMongooseDB, InitSequelizeDB } from "./database";
 
 import OrderModule from "./modules/Order";
 import { PORT } from "./constants/app";
@@ -23,9 +23,10 @@ export default class Application {
   }
 
   async Init() {
-    const dbClient = await InitializeDB();
-    OrderModule.Init(dbClient, this.app);
-    await ProductModule.Init(dbClient, this.app);
+    const dbMongooseClient = await InitMongooseDB();
+    const dbSequelizeClient = await InitSequelizeDB();
+    OrderModule.Init(dbSequelizeClient, this.app);
+    await ProductModule.Init(dbMongooseClient, this.app);
 
     this.app.use("/hello", (_, res, _2) => {
       res.status(200).json({ message: "Project Created by Asis Melgarejo" });
