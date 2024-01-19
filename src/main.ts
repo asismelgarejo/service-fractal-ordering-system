@@ -24,9 +24,9 @@ export default class Application {
   }
 
   async Init() {
-    const dbMongooseClient = await InitMongooseDB();
     const dbSequelizeClient = await InitSequelizeDB();
     OrderModule.Init(dbSequelizeClient, this.app);
+    const ProductModel = await ProductModule.Init(dbSequelizeClient, this.app);
 
     try {
       await dbSequelizeClient.sync({ force: false });
@@ -35,8 +35,7 @@ export default class Application {
       console.log(" > there was an issue synchronizing the database", error);
       process.exit(1);
     }
-
-    await ProductModule.Init(dbMongooseClient, this.app);
+    await ProductModule.Seeder(ProductModel);
 
     this.app.use("/hello", (_, res, _2) => {
       res.status(200).json({ message: "Project Created by Asis Melgarejo" });

@@ -1,0 +1,10 @@
+{
+  "compilerOptions": {
+    "baseUrl": "./",
+    "paths": {
+      "@models/*": ["./src/modules/*"],
+      "@database/*": ["./database/*"],
+      "@constants/*": ["./constants/*"],
+    }
+  }
+}

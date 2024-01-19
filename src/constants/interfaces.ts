@@ -17,11 +17,13 @@ export type DBOptions = Options & { use_env_variable?: string };
 
 export type DBConfigEnvs = Record<Environments, DBOptions>;
 
-export interface DBClient<M extends {}> {
-  findAll(): Promise<CustomModel<M>[]>;
-  insertOne(payload: M): any;
-  deleteOne(fields: Partial<M>): Promise<number>;
-  updateOne(filters: Partial<M>, fields: Partial<M>): Promise<number>;
+export interface DBClient<T extends {}> {
+  findAll(): Promise<CustomModel<T>[]>;
+  insertOne<M = T>(payload: M): any;
+  deleteOne(fields: Partial<T>): Promise<number>;
+  updateOne(filters: Partial<T>, fields: Partial<T>): Promise<number>;
+  count(): Promise<number>;
+  insertMany(records: T[]): Promise<CustomModel<T>[]>;
 }
 
 // class DBMongoose implements DBClient {
@@ -36,7 +38,7 @@ export class DBSequelize<T extends {}> implements DBClient<T> {
   async findAll() {
     return await this.sqlz.findAll();
   }
-  async insertOne(payload: T): Promise<any> {
+  async insertOne<M = T>(payload: M): Promise<any> {
     return await this.sqlz.create(payload as any);
   }
   async deleteOne(fields: Partial<T>): Promise<number> {
@@ -49,6 +51,12 @@ export class DBSequelize<T extends {}> implements DBClient<T> {
   }
   async updateOne(filters: Partial<T>, fields1: Partial<T>): Promise<number> {
     return (await this.sqlz.update(fields1, { where: filters as T }))[0];
+  }
+  async count(): Promise<number> {
+    return await this.sqlz.count();
+  }
+  async insertMany<M = T>(records: M[]): Promise<CustomModel<T>[]> {
+    return await this.sqlz.bulkCreate(records as any);
   }
 }
 export class CustomModel<T extends {}> extends SequelizeModel<T> {
