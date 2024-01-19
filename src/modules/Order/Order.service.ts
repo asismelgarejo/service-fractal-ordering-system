@@ -13,14 +13,14 @@ export default class OrderService {
     }
   }
 
-  // async createOrder(payload: Omit<OrderDTO, "ID">): Promise<void> {
-  //   try {
-  //     await this.model.create(payload);
-  //   } catch (error) {
-  //     console.log("OrderService: createOrder", error);
-  //     throw error;
-  //   }
-  // }
+  async createOrder(payload: OrderDTO): Promise<void> {
+    try {
+      await this.model.insertOne(payload);
+    } catch (error) {
+      console.log("OrderService: createOrder", error);
+      throw error;
+    }
+  }
   // async updateOrder(ID: string, payload: OrderDTO): Promise<void> {
   //   try {
   //     const orderDoc = await this.findOrder(ID);
@@ -55,15 +55,15 @@ export default class OrderService {
   //     throw error;
   //   }
   // }
-  // async deleteOrder(ID: string): Promise<void> {
-  //   try {
-  //     const response = await this.model.deleteOne({ _id: ID });
-  //     if (response.deletedCount === 0) {
-  //       throw new Error("the order does not exist. No document was deleted");
-  //     }
-  //   } catch (error) {
-  //     console.log("OrderService: findOrder", error);
-  //     throw error;
-  //   }
-  // }
+  async deleteOrder(ID: string): Promise<void> {
+    try {
+      const response = await this.model.deleteOne({ ID });
+      if (response === 0) {
+        throw new Error("the order does not exist. No document was deleted");
+      }
+    } catch (error) {
+      console.log("OrderService: findOrder", error);
+      throw error;
+    }
+  }
 }
