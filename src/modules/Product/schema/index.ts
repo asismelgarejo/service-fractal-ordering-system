@@ -1,4 +1,4 @@
-import OrderSchema from "./sequelize/Order.schema";
-// import OrderSchema from "./mongoose/Order.schema";
+import GetSchema, { ProductSchema } from "./sequelize/Order.schema";
+// import {OrderSchema} from "./mongoose/Order.schema";
 
-export default OrderSchema;
+export { ProductSchema, GetSchema };

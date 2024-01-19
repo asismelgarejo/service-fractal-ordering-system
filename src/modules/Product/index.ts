@@ -2,9 +2,9 @@ import ProductController from "./Product.controller";
 import ProductService from "./Product.service";
 import { Router } from "express";
 import MOCK_PRODUCTS from "../../mocks/MOCK_PRODUCTS";
-import GetSchema from "./schema";
+import { GetSchema, ProductSchema } from "./schema";
 import { Sequelize } from "sequelize";
-import { DBSequelize } from "constants/interfaces";
+import { DBSequelize, DictionaryModels } from "constants/interfaces";
 import { ProductDTO } from "./interfaces";
 
 export default class ProductModule {
@@ -24,8 +24,11 @@ export default class ProductModule {
   }
 
   // static async Init(dbClient: typeof mongoose, router: Router) {
-  static async Init(dbClient: Sequelize, router: Router): Promise<DBSequelize<ProductDTO>> {
-    const ProductModel = GetSchema(dbClient);
+  static async Init(
+    dbClient: Sequelize,
+    router: Router,
+  ): Promise<DBSequelize<ProductDTO>> {
+    const ProductModel = GetSchema(dbClient, ProductSchema);
 
     const orderService = new ProductService(ProductModel);
     const orderController = new ProductController(orderService);

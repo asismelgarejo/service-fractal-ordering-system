@@ -1,13 +1,18 @@
-import { DBSequelize } from "constants/interfaces";
+import { DBSequelize, DictionaryModels } from "constants/interfaces";
 import { ProductDTO } from "modules/Product/interfaces";
 import { DataTypes, Model, Sequelize } from "sequelize";
 
-class ProductSchema extends Model {
-  static associate() {}
+export class ProductSchema extends Model {
+  static associate(models: DictionaryModels) {
+    this.belongsToMany(models.Order, { through: models.OrderProduct });
+  }
 }
 
-export default function GetSchema(sequelize: Sequelize) {
-  ProductSchema.init(
+export default function GetSchema(
+  sequelize: Sequelize,
+  schema: typeof ProductSchema
+) {
+  schema.init(
     {
       ID: {
         type: DataTypes.INTEGER,
@@ -32,5 +37,5 @@ export default function GetSchema(sequelize: Sequelize) {
     { sequelize, modelName: "Product", timestamps: false }
   );
 
-  return new DBSequelize<ProductDTO>(ProductSchema);
+  return new DBSequelize<ProductDTO>(schema);
 }
