@@ -1,5 +1,5 @@
 import { Model as MongooseModel } from "mongoose";
-import { Options, Model as SequelizeModel } from "sequelize";
+import { FindOptions, Options, Model as SequelizeModel } from "sequelize";
 
 export type HttpResponse<T> = {
   data?: T;
@@ -18,7 +18,7 @@ export type DBOptions = Options & { use_env_variable?: string };
 export type DBConfigEnvs = Record<Environments, DBOptions>;
 
 export interface DBClient<T extends {}> {
-  findAll(): Promise<CustomModel<T>[]>;
+  findAll(filters: FindOptions<T>): Promise<CustomModel<T>[]>;
   insertOne<M = T>(payload: M): any;
   deleteOne(fields: Partial<T>): Promise<number>;
   updateOne(filters: Partial<T>, fields: Partial<T>): Promise<number>;
@@ -35,7 +35,7 @@ export interface DBClient<T extends {}> {
 //#region sequelize
 export class DBSequelize<T extends {}> implements DBClient<T> {
   constructor(private sqlz: typeof CustomModel<T>) {}
-  async findAll() {
+  async findAll(filters: FindOptions<T>) {
     return await this.sqlz.findAll();
   }
   async insertOne<M = T>(payload: M): Promise<any> {

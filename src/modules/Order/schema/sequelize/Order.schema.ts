@@ -1,17 +1,19 @@
-import { DBSequelize, DictionaryModels } from "constants/interfaces";
-import { OrderDTO } from "modules/Order/interfaces";
+import { DictionaryModels } from "constants/interfaces";
 import { DataTypes, Model, Sequelize } from "sequelize";
 
 export class OrderSchema extends Model {
   static associate(models: DictionaryModels) {
-    this.belongsToMany(models.Product, { through: models.OrderProduct, foreignKey: 'OrderCode', });
+    this.belongsToMany(models.Product, {
+      through: models.OrderProduct,
+      foreignKey: "OrderCode",
+    });
   }
 }
 
-export default function GetSchema(
+export default function BootstrapSchema(
   sequelize: Sequelize,
   schema: typeof OrderSchema
-): DBSequelize<OrderDTO> {
+): typeof OrderSchema {
   schema.init(
     {
       ID: {
@@ -57,5 +59,5 @@ export default function GetSchema(
     { sequelize, modelName: "Order", timestamps: false }
   );
 
-  return new DBSequelize<OrderDTO>(OrderSchema);
+  return OrderSchema;
 }

@@ -6,15 +6,13 @@ const { urlencoded } = pkg;
 import * as dotenv from "dotenv";
 dotenv.config({ path: path.resolve(process.cwd(), `.env.${ENV}`) });
 
-import { InitMongooseDB, InitSequelizeDB } from "./database";
+import { InitSequelizeDB } from "./database";
 
 import OrderModule from "./modules/Order";
 import OrderProductModule from "./modules/Order_Product";
 import ProductModule from "modules/Product";
 import { ENV } from "constants/app";
-import { OrderSchema } from "modules/Order/schema";
-import { ProductSchema } from "modules/Product/schema";
-import { OrderProductSchema } from "modules/Order_Product/schema/sequelize/schema";
+import { DictionaryModels } from "constants/interfaces";
 
 export default class Application {
   app: Express;
@@ -29,24 +27,22 @@ export default class Application {
 
   async Init() {
     const dbSequelizeClient = await InitSequelizeDB();
-    
+
+    const models: DictionaryModels = {};
+
     //#region module initialization
-    OrderModule.Init(dbSequelizeClient, this.app);
-    const ProductModel = await ProductModule.Init(dbSequelizeClient, this.app);
-    OrderProductModule.Init(dbSequelizeClient, this.app);
+    models.Product = await ProductModule.Init(dbSequelizeClient, this.app);
+    models.Order = OrderModule.Init(dbSequelizeClient, this.app, models);
+    models.OrderProduct = OrderProductModule.Init(dbSequelizeClient, this.app);
     //#endregion module initialization
-    
+
     //#region before synchronization
-    const models = {
-      Order: OrderSchema,
-      Product: ProductSchema,
-      OrderProduct: OrderProductSchema,
-    };
-    OrderSchema.associate(models);
-    ProductSchema.associate(models);
-    OrderProductSchema.associate(models);
+
+    models.Order.associate(models);
+    models.Product.associate(models);
+    models.OrderProduct.associate(models);
     //#endregion before synchronization
-    
+
     try {
       await dbSequelizeClient.sync({ force: true });
       console.log("> database has been synced");
@@ -56,7 +52,7 @@ export default class Application {
     }
 
     //#region after synchronization
-    await ProductModule.Seeder(ProductModel);
+    await ProductModule.Seeder(models.Product);
     //#endregion after synchronization
 
     this.app.use("/hello", (_, res, _2) => {

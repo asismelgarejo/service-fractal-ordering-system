@@ -1,5 +1,4 @@
-import { DBSequelize, DictionaryModels } from "constants/interfaces";
-import { ProductDTO } from "modules/Product/interfaces";
+import { DictionaryModels } from "constants/interfaces";
 import { DataTypes, Model, Sequelize } from "sequelize";
 
 export class ProductSchema extends Model {
@@ -8,10 +7,10 @@ export class ProductSchema extends Model {
   }
 }
 
-export default function GetSchema(
+export default function BootstrapSchema(
   sequelize: Sequelize,
   schema: typeof ProductSchema
-) {
+): void {
   schema.init(
     {
       ID: {
@@ -36,6 +35,4 @@ export default function GetSchema(
     },
     { sequelize, modelName: "Product", timestamps: false }
   );
-
-  return new DBSequelize<ProductDTO>(schema);
 }

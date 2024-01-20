@@ -1,8 +1,8 @@
-import { DBClient } from "constants/interfaces";
+import { CustomModel } from "constants/interfaces";
 import { ProductDTO } from "./interfaces";
 
 export default class ProductService {
-  constructor(private model: DBClient<ProductDTO>) {}
+  constructor(private model: typeof CustomModel<ProductDTO>) {}
 
   async getProducts(): Promise<ProductDTO[]> {
     try {
@@ -13,9 +13,9 @@ export default class ProductService {
     }
   }
 
-  async createProduct(payload: Omit<ProductDTO, "ID">): Promise<void> {
+  async createProduct(payload: ProductDTO): Promise<void> {
     try {
-      await this.model.insertOne<Omit<ProductDTO, "ID">>(payload);
+      await this.model.create(payload);
     } catch (error) {
       console.log("ProductService: createProduct", error);
       throw error;
@@ -45,10 +45,12 @@ export default class ProductService {
   //     throw error;
   //   }
   // }
-  async deleteProduct(ID: string): Promise<void> {
+  async deleteProduct(ID: number): Promise<void> {
     try {
-      const response = await this.model.deleteOne({ ID });
-      if (response === 0) {
+      const record = await this.model.findOne({ where: { ID } });
+      if (record) {
+        await record?.destroy();
+      } else {
         throw new Error("the product does not exist. No document was deleted");
       }
     } catch (error) {

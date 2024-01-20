@@ -6,7 +6,7 @@ export class OrderProductSchema extends Model {
   static associate(models: DictionaryModels) {}
 }
 
-export default function GetSchema(
+export default function BootstrapSchema(
   sequelize: Sequelize,
   schema: typeof OrderProductSchema
 ) {
@@ -59,6 +59,4 @@ export default function GetSchema(
       freezeTableName: true,
     }
   );
-
-  return new DBSequelize<OrderProductDTO>(schema);
 }
