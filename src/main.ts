@@ -32,8 +32,8 @@ export default class Application {
 
     //#region module initialization
     models.Product = await ProductModule.Init(dbSequelizeClient, this.app);
-    models.Order = OrderModule.Init(dbSequelizeClient, this.app, models);
     models.OrderProduct = OrderProductModule.Init(dbSequelizeClient, this.app);
+    models.Order = OrderModule.Init(dbSequelizeClient, this.app, models);
     //#endregion module initialization
 
     //#region before synchronization
@@ -44,7 +44,7 @@ export default class Application {
     //#endregion before synchronization
 
     try {
-      await dbSequelizeClient.sync({ force: true });
+      await dbSequelizeClient.sync({ force: false });
       console.log("> database has been synced");
     } catch (error) {
       console.log(" > there was an issue synchronizing the database", error);

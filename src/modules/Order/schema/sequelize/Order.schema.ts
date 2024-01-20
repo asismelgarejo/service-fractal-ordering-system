@@ -6,6 +6,7 @@ export class OrderSchema extends Model {
     this.belongsToMany(models.Product, {
       through: models.OrderProduct,
       foreignKey: "OrderCode",
+      sourceKey: "Order",
     });
   }
 }
@@ -13,7 +14,7 @@ export class OrderSchema extends Model {
 export default function BootstrapSchema(
   sequelize: Sequelize,
   schema: typeof OrderSchema
-): typeof OrderSchema {
+): void {
   schema.init(
     {
       ID: {
@@ -58,6 +59,4 @@ export default function BootstrapSchema(
     },
     { sequelize, modelName: "Order", timestamps: false }
   );
-
-  return OrderSchema;
 }

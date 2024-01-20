@@ -13,11 +13,11 @@ export default class OrderModule {
     router: Router,
     models: DictionaryModels
   ): typeof OrderSchema {
-    const OrderModel = BootstrapSchema(dbClient, OrderSchema);
-    const orderService = new OrderService(OrderModel, models);
+    BootstrapSchema(dbClient, OrderSchema);
+    const orderService = new OrderService(OrderSchema, models);
     const orderController = new OrderController(orderService);
     const subRoutes = orderController.Init();
     router.use("/orders", subRoutes);
-    return OrderModel;
+    return OrderSchema;
   }
 }

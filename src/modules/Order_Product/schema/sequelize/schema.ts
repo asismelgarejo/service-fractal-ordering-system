@@ -1,5 +1,4 @@
-import { DBSequelize, DictionaryModels } from "constants/interfaces";
-import { OrderProductDTO } from "modules/Order_Product/interfaces";
+import { DictionaryModels } from "constants/interfaces";
 import { DataTypes, Model, Sequelize } from "sequelize";
 
 export class OrderProductSchema extends Model {

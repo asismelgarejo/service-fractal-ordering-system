@@ -10,7 +10,24 @@ export default class OrderService {
   async getOrders(): Promise<OrderDTO[]> {
     try {
       return (await this.model.findAll({ include: this.models.Product })).map(
-        (order) => order.toJSON()
+        (order) => {
+          const orderData = order.toJSON() as any;
+          return {
+            Order: orderData.Order,
+            Date: orderData.Date,
+            FinalPrice: +orderData.FinalPrice,
+            Products: orderData.Products.map((product: any) => ({
+              Product: {
+                ID: product.ID,
+                Name: product.Name,
+                UnitPrice: +product.UnitPrice,
+              },
+              Qty: product.OrderProduct.Qty,
+              TotalPrice: +product.OrderProduct.TotalPrice,
+            })),
+            Status: orderData.Status,
+          } as OrderDTO;
+        }
       );
     } catch (error) {
       console.log("OrderService: ", error);
@@ -20,7 +37,28 @@ export default class OrderService {
 
   async createOrder(payload: OrderDTO): Promise<void> {
     try {
-      await this.model.create(payload);
+      const { Products, ...orderData } = payload;
+
+      const createOrder = await this.model.create(orderData as any);
+      console.log(">>>createOrder!.ID", (createOrder as any).Order);
+
+      await Promise.all(
+        Products.map((data) => {
+          return this.models.OrderProduct.create({
+            OrderCode: payload.Order,
+            ProductID: data.Product.ID,
+            Qty: data.Qty,
+            TotalPrice: data.TotalPrice,
+          });
+        })
+      );
+
+      // (createOrder as any).addProducts(products, {
+      //   through: {
+      //     Qty: productData.Qty,
+      //     TotalPrice: productData.Qty * product.UnitPrice,
+      //   },
+      // });
     } catch (error) {
       console.log("OrderService: createOrder", error);
       throw error;
