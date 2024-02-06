@@ -73,7 +73,7 @@ export default class OrderController {
       return;
     }
     try {
-      await this.orderService.updateOrder(ID, payload);
+      await this.orderService.updateOrder(+ID, payload);
       response.status = httpStatus.OK;
       response.message = "Order was successfully updated.";
       res.status(httpStatus.OK).send(response);
@@ -105,7 +105,7 @@ export default class OrderController {
     const response: HttpResponse<OrderDTO> = {};
     res.contentType("application/json");
     try {
-      const orderRes = await this.orderService.findOrder(ID);
+      const orderRes = await this.orderService.findOrder(+ID);
       response.status = httpStatus.OK;
       response.message = ReasonPhrases.OK;
       response.data = orderRes;

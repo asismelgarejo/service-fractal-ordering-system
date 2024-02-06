@@ -9,10 +9,10 @@ dotenv.config({ path: path.resolve(process.cwd(), `.env.${ENV}`) });
 import { InitSequelizeDB } from "./database";
 
 import OrderModule from "./modules/Order";
-import OrderProductModule from "./modules/Order_Product";
-import ProductModule from "modules/Product";
-import { ENV } from "constants/app";
-import { DictionaryModels } from "constants/interfaces";
+import OrderProductModule from "./modules/OrderProduct";
+import ProductModule from "./modules/Product";
+import { ENV } from "./constants/app";
+import { DictionaryModels } from "./constants/interfaces";
 
 export default class Application {
   app: Express;
@@ -20,7 +20,11 @@ export default class Application {
     const app = express();
     app.use(express.urlencoded({ extended: true }));
     app.use(express.json());
-    app.use(cors());
+    app.use(
+      cors({
+        origin: "http://localhost:3000",
+      })
+    );
     app.use(urlencoded({ extended: false }));
     this.app = app;
   }

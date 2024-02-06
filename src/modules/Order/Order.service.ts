@@ -1,4 +1,4 @@
-import { CustomModel, DictionaryModels } from "constants/interfaces";
+import { CustomModel, DictionaryModels } from "@constants/interfaces";
 import { OrderDTO } from "./interfaces";
 
 export default class OrderService {
@@ -13,6 +13,7 @@ export default class OrderService {
         (order) => {
           const orderData = order.toJSON() as any;
           return {
+            ID: orderData.ID,
             Order: orderData.Order,
             Date: orderData.Date,
             FinalPrice: +orderData.FinalPrice,
@@ -37,13 +38,15 @@ export default class OrderService {
 
   async createOrder(payload: OrderDTO): Promise<void> {
     try {
-      const { Products, ...orderData } = payload;
-
-      const createOrder = await this.model.create(orderData as any);
-      console.log(">>>createOrder!.ID", (createOrder as any).Order);
-
+      console.log(">payload", payload);
+      await this.models.Order.create({
+        Order: payload.Order,
+        Date: payload.Date,
+        FinalPrice: payload.FinalPrice,
+        Status: payload.Status,
+      });
       await Promise.all(
-        Products.map((data) => {
+        payload.Products.map((data) => {
           return this.models.OrderProduct.create({
             OrderCode: payload.Order,
             ProductID: data.Product.ID,
@@ -52,13 +55,6 @@ export default class OrderService {
           });
         })
       );
-
-      // (createOrder as any).addProducts(products, {
-      //   through: {
-      //     Qty: productData.Qty,
-      //     TotalPrice: productData.Qty * product.UnitPrice,
-      //   },
-      // });
     } catch (error) {
       console.log("OrderService: createOrder", error);
       throw error;
@@ -72,9 +68,24 @@ export default class OrderService {
       }
 
       const response = await this.model.update(payload, { where: { ID } });
+
       if (response[0] === 0) {
         throw new Error("the order does not exist. No document was updated");
       }
+
+      await Promise.all(
+        payload.Products.map((data) => {
+          return this.models.OrderProduct.upsert<any>(
+            {
+              OrderCode: payload.Order,
+              ProductID: data.Product.ID,
+              Qty: data.Qty,
+              TotalPrice: data.TotalPrice,
+            },
+            { fields: ["OrderCode", "ProductID"] }
+          );
+        })
+      );
     } catch (error) {
       console.log("OrderService: updateOrder", error);
       throw error;
@@ -82,11 +93,30 @@ export default class OrderService {
   }
   async findOrder(ID: number): Promise<OrderDTO> {
     try {
-      const response = await this.model.findByPk(ID);
-      if (!response) {
+      const orderData = (
+        await this.model.findByPk(ID, {
+          include: this.models.Product,
+        })
+      )?.toJSON();
+      if (!orderData) {
         throw new Error("the order does not exist");
       }
-      return response?.toJSON();
+      return {
+        ID: orderData.ID,
+        Order: orderData.Order,
+        Date: orderData.Date,
+        FinalPrice: +orderData.FinalPrice,
+        Products: orderData.Products.map((product: any) => ({
+          Product: {
+            ID: product.ID,
+            Name: product.Name,
+            UnitPrice: +product.UnitPrice,
+          },
+          Qty: product.OrderProduct.Qty,
+          TotalPrice: +product.OrderProduct.TotalPrice,
+        })),
+        Status: orderData.Status,
+      } as OrderDTO;
     } catch (error) {
       console.log("OrderService: findOrder", error);
       throw error;

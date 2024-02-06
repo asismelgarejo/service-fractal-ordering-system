@@ -4,7 +4,7 @@ import { Router } from "express";
 import MOCK_PRODUCTS from "../../mocks/MOCK_PRODUCTS";
 import { BootstrapSchema, ProductSchema } from "./schema";
 import { Sequelize } from "sequelize";
-import { CustomModel } from "constants/interfaces";
+import { CustomModel } from "@constants/interfaces";
 import { ProductDTO } from "./interfaces";
 
 export default class ProductModule {

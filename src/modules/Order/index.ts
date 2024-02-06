@@ -3,7 +3,7 @@ import OrderController from "./Order.controller";
 import OrderService from "./Order.service";
 import { Router } from "express";
 import { Sequelize } from "sequelize";
-import { DictionaryModels } from "constants/interfaces";
+import { DictionaryModels } from "src/constants/interfaces";
 
 export default class OrderModule {
   constructor() {}

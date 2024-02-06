@@ -77,7 +77,7 @@ export default class ProductController {
       return;
     }
     try {
-      await this.productService.updateProduct(ID, payload);
+      await this.productService.updateProduct(+ID, payload);
       response.status = httpStatus.OK;
       response.message = "Product was successfully updated.";
       res.status(httpStatus.OK).send(response);
@@ -93,7 +93,7 @@ export default class ProductController {
     const response: HttpResponse<ProductDTO[]> = {};
     res.contentType("application/json");
     try {
-      await this.productService.deleteProduct(ID);
+      await this.productService.deleteProduct(+ID);
       response.status = httpStatus.OK;
       response.message = "Product was successfully deleted.";
       res.status(httpStatus.OK).send(response);
@@ -109,7 +109,7 @@ export default class ProductController {
     const response: HttpResponse<ProductDTO> = {};
     res.contentType("application/json");
     try {
-      const productRes = await this.productService.findProduct(ID);
+      const productRes = await this.productService.findProduct(+ID);
       response.status = httpStatus.OK;
       response.message = ReasonPhrases.OK;
       response.data = productRes;

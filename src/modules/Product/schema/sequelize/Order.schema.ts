@@ -1,4 +1,4 @@
-import { DictionaryModels } from "constants/interfaces";
+import { DictionaryModels } from "src/constants/interfaces";
 import { DataTypes, Model, Sequelize } from "sequelize";
 
 export class ProductSchema extends Model {
